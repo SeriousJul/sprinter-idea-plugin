@@ -1,0 +1,5 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.github.seriousjul.sprinter">
+        <testFrameworkForRunningInSharedJVM implementation="com.github.seriousjul.sprinter.frameworks.testng.TestNGForRunningInSharedJVM"/>
+    </extensions>
+</idea-plugin>

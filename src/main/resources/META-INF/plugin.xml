@@ -1,18 +1,68 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.seriousjul.sprinterideaplugin</id>
+    <id>com.github.seriousjul.sprinter</id>
     <name>Sprinter</name>
-    <vendor>seriousjul</vendor>
+    <vendor>SeriousJul</vendor>
 
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends optional="true" config-file="sprinter-TestNGJ.xml">TestNG-J</depends>
+    <depends optional="true" config-file="sprinter-JUnit.xml">JUnit</depends>
+    <depends optional="true" config-file="sprinter-Kotlin.xml">org.jetbrains.kotlin</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <extensionPoints>
+        <extensionPoint name="testFrameworkForRunningInSharedJVM"
+                        interface="com.github.seriousjul.sprinter.frameworks.TestFrameworkForRunningInSharedJVM"/>
+    </extensionPoints>
 
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.seriousjul.sprinterideaplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <runLineMarkerContributor language="JAVA" implementationClass="com.github.seriousjul.sprinter.SameJvmRunLineMarkerContributor"/>
+        <configurationType implementation="com.github.seriousjul.sprinter.SharedJvmConfigurationType"/>
+        <runConfigurationProducer implementation="com.github.seriousjul.sprinter.SharedJvmConfigurationProducer"/>
+
+        <projectService serviceImplementation="com.github.seriousjul.sprinter.SharedJvmConfigurationProducer"/>
+        <projectService serviceInterface="com.github.seriousjul.sprinter.SharedJvmExecutorService"
+                        serviceImplementation="com.github.seriousjul.sprinter.SharedJvmExecutorServiceImpl"/>
+
+        <projectService serviceInterface="com.github.seriousjul.sprinter.DCEVMJavaArgumentsProvider"
+                        serviceImplementation="com.github.seriousjul.sprinter.DCEVMJavaArgumentsProviderImpl"/>
+        <projectConfigurable
+                parentId="tools"
+                instance="com.github.seriousjul.sprinter.settings.SharedJvmSettingsConfigurable"
+                id="com.github.seriousjul.sprinter.settings.SharedJvmSettingsConfigurable"
+                displayName="Sprinter Settings"/>
+        <java.programPatcher implementation="com.github.seriousjul.sprinter.DCEVMParametersPatcher"/>
+
+        <projectService serviceImplementation="com.github.seriousjul.sprinter.settings.SharedSprinterSettingsState"/>
+        <projectService serviceImplementation="com.github.seriousjul.sprinter.settings.LocalSprinterSettingsState"/>
+        <projectService serviceInterface="com.github.seriousjul.sprinter.settings.ModulesWithHotSwapAgentPluginsService"
+                        serviceImplementation="com.github.seriousjul.sprinter.settings.ModulesWithHotSwapAgentPluginsServiceImpl"/>
+        <projectService serviceInterface="com.github.seriousjul.sprinter.settings.ConfigurationsToAttachHAService"
+                        serviceImplementation="com.github.seriousjul.sprinter.settings.ConfigurationsToAttachHAServiceImpl"/>
     </extensions>
 
-    <applicationListeners>
-        <listener class="com.github.seriousjul.sprinterideaplugin.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
-    </applicationListeners>
+    <projectListeners>
+        <listener class="com.github.seriousjul.sprinter.settings.ConfigurationChangeListener"
+                  topic="com.intellij.execution.RunManagerListener"/>
+        <listener class="com.github.seriousjul.sprinter.settings.ModuleChangeListener"
+                  topic="com.intellij.openapi.project.ModuleListener"/>
+    </projectListeners>
+    <actions>
+        <action id="RunTestsInExistingJvm" class="com.github.seriousjul.sprinter.RunTestsInExistingJvmAction">
+            <keyboard-shortcut first-keystroke="shift alt a" keymap="$default"/>
+            <add-to-group group-id="RunContextGroupInner" anchor="after" relative-to-action="DebugClass"/>
+        </action>
+        <action id="RunPreviousTestsInExistingJvm" class="com.github.seriousjul.sprinter.RunPreviousTestsInExistingJvmAction">
+            <keyboard-shortcut first-keystroke="shift alt z" keymap="$default"/>
+        </action>
+        <action id="CompileModulesForRunningConfigurations"
+                class="com.github.seriousjul.sprinter.CompileModulesForRunningConfigurationsAction">
+            <add-to-group group-id="Java.BuildMenu" anchor="after" relative-to-action="MakeModule"/>
+            <keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
+        </action>
+    </actions>
 </idea-plugin>
