@@ -91,11 +91,11 @@ fun createSharedJvmSettingPanel(project: Project): DialogPanel = panel {
                     false,
                     false,
                     false
-                ).withShowFileSystemRoots(true)
+                ).withShowFileSystemRoots(true).withTitle(
+                    "Select Hotswap Agent Location")
                 haLocationComponent = textFieldWithBrowseButton(
-                    "Select Hotswap Agent Location",
-                    project,
-                    fileChooserDescriptor
+                    fileChooserDescriptor,
+                    project
                 ).label("Hotswap agent location: ", LabelPosition.TOP)
                     .align(Align.FILL)
                     .bindText(localSettings::hotswapAgentLocation)

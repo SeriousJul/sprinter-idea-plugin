@@ -165,7 +165,8 @@ class SharedJvmExecutorServiceImpl(
             ProgramRunnerUtil.executeConfigurationAsync(executionEnvironment, true, true) {
                 val debuggerSession = DebuggerManagerEx.getInstanceEx(project).context.debuggerSession
                     ?: return@executeConfigurationAsync
-                val contentManager = debuggerSession.xDebugSession?.ui?.contentManager ?: return@executeConfigurationAsync
+                val contentManager =
+                    debuggerSession.xDebugSession?.ui?.contentManager ?: return@executeConfigurationAsync
                 executeConfiguration(configurationToExecute, contentManager)
             }
         }
@@ -196,6 +197,9 @@ class SharedJvmExecutorServiceImpl(
                     override fun onSuccess(sessions: MutableList<DebuggerSession>?) {
                         executeConfiguration(configuration, contentManager)
                     }
+                    override fun onNothingToReload(sessions: MutableList<DebuggerSession>?) {
+                        executeConfiguration(configuration, contentManager)
+                    }
                 })
             projectTaskManager.run(buildContext, buildTask)
         } else {
@@ -214,7 +218,10 @@ class SharedJvmExecutorServiceImpl(
         ).ask(project)
     }
 
-    private fun sendExecuteConfigurationSignal(configuration: JavaTestConfigurationBase, consoleAttacher: ContentManager) {
+    private fun sendExecuteConfigurationSignal(
+        configuration: JavaTestConfigurationBase,
+        consoleAttacher: ContentManager
+    ) {
         sharedJvmProcess?.executeConfiguration(configuration, consoleAttacher)
         lastExecutedConfiguration = configuration
     }
