@@ -6,6 +6,7 @@
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <resource-bundle>messages</resource-bundle>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
     <depends optional="true" config-file="sprinter-TestNGJ.xml">TestNG-J</depends>
@@ -52,7 +53,9 @@
                   topic="com.intellij.openapi.project.ModuleListener"/>
     </projectListeners>
     <actions>
-        <action id="RunTestsInExistingJvm" class="com.github.seriousjul.sprinter.RunTestsInExistingJvmAction">
+        <action id="RunTestsInExistingJvm"
+                class="com.github.seriousjul.sprinter.RunTestsInExistingJvmAction"
+                icon="AllIcons.RunConfigurations.TestState.Run_run">
             <keyboard-shortcut first-keystroke="shift alt a" keymap="$default"/>
         </action>
         <action id="RunPreviousTestsInExistingJvm"

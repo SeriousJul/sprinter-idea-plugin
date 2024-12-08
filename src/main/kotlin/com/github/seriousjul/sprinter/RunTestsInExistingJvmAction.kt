@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 
-open class RunTestsInExistingJvmAction : AnAction({ "Run in Launched JVM" }, AllIcons.RunConfigurations.TestState.Run_run) {
+open class RunTestsInExistingJvmAction : AnAction() {
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.BGT
     }
