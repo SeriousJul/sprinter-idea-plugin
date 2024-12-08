@@ -1,12 +1,10 @@
 package com.github.seriousjul.sprinter.settings
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.RoamingType
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
+import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.XmlSerializerUtil
 
+@Service(Service.Level.PROJECT)
 @State(
     name = "com.github.seriousjul.sprinter.settings.LocalSprinterSettingsState",
     storages = [Storage("sprinter/LocalSettings.xml", roamingType = RoamingType.DISABLED)]
@@ -30,6 +28,7 @@ enum class UsedJvmType {
 }
 
 
+@Service(Service.Level.PROJECT)
 @State(
     name = "com.github.seriousjul.sprinter.settings.SharedSprinterSettingsState",
     storages = [Storage("sprinter/SharedSettings.xml")]

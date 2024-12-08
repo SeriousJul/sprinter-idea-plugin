@@ -14,13 +14,15 @@
 
     <extensionPoints>
         <extensionPoint name="testFrameworkForRunningInSharedJVM"
-                        interface="com.github.seriousjul.sprinter.frameworks.TestFrameworkForRunningInSharedJVM"/>
+                        interface="com.github.seriousjul.sprinter.frameworks.TestFrameworkForRunningInSharedJVM"
+                        dynamic="true"/>
     </extensionPoints>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <runLineMarkerContributor language="JAVA" implementationClass="com.github.seriousjul.sprinter.SameJvmRunLineMarkerContributor"/>
+        <runLineMarkerContributor language="JAVA"
+                                  implementationClass="com.github.seriousjul.sprinter.SameJvmRunLineMarkerContributor"/>
         <configurationType implementation="com.github.seriousjul.sprinter.SharedJvmConfigurationType"/>
         <runConfigurationProducer implementation="com.github.seriousjul.sprinter.SharedJvmConfigurationProducer"/>
 
@@ -37,8 +39,6 @@
                 displayName="Sprinter Settings"/>
         <java.programPatcher implementation="com.github.seriousjul.sprinter.DCEVMParametersPatcher"/>
 
-        <projectService serviceImplementation="com.github.seriousjul.sprinter.settings.SharedSprinterSettingsState"/>
-        <projectService serviceImplementation="com.github.seriousjul.sprinter.settings.LocalSprinterSettingsState"/>
         <projectService serviceInterface="com.github.seriousjul.sprinter.settings.ModulesWithHotSwapAgentPluginsService"
                         serviceImplementation="com.github.seriousjul.sprinter.settings.ModulesWithHotSwapAgentPluginsServiceImpl"/>
         <projectService serviceInterface="com.github.seriousjul.sprinter.settings.ConfigurationsToAttachHAService"
@@ -54,9 +54,9 @@
     <actions>
         <action id="RunTestsInExistingJvm" class="com.github.seriousjul.sprinter.RunTestsInExistingJvmAction">
             <keyboard-shortcut first-keystroke="shift alt a" keymap="$default"/>
-            <add-to-group group-id="RunContextGroupInner" anchor="after" relative-to-action="DebugClass"/>
         </action>
-        <action id="RunPreviousTestsInExistingJvm" class="com.github.seriousjul.sprinter.RunPreviousTestsInExistingJvmAction">
+        <action id="RunPreviousTestsInExistingJvm"
+                class="com.github.seriousjul.sprinter.RunPreviousTestsInExistingJvmAction">
             <keyboard-shortcut first-keystroke="shift alt z" keymap="$default"/>
         </action>
         <action id="CompileModulesForRunningConfigurations"
