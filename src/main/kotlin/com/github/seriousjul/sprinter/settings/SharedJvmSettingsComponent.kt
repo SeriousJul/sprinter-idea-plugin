@@ -4,6 +4,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.actions.ChooseRunConfigurationPopup
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ProgramRunner
+import com.intellij.ide.DataManager
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
@@ -46,7 +47,7 @@ fun createSharedJvmSettingPanel(project: Project): DialogPanel = panel {
     }
     lateinit var usedJvmTypePicker: Cell<ComboBox<UsedJvmType>>
     row {
-        usedJvmTypePicker = comboBox(UsedJvmType.values().toList())
+        usedJvmTypePicker = comboBox(UsedJvmType.entries)
             .label("Configured JVM type: ", LabelPosition.TOP)
             .align(Align.FILL)
             .bindItem(localSettings::usedJvmType.toNullableProperty())
@@ -92,7 +93,8 @@ fun createSharedJvmSettingPanel(project: Project): DialogPanel = panel {
                     false,
                     false
                 ).withShowFileSystemRoots(true).withTitle(
-                    "Select Hotswap Agent Location")
+                    "Select Hotswap Agent Location"
+                )
                 haLocationComponent = textFieldWithBrowseButton(
                     fileChooserDescriptor,
                     project
@@ -164,7 +166,12 @@ private class ConfigurationsWithHotswapAgentPluginsPicker(private val project: P
     private fun addConfiguration(it: AnActionButton) {
         val wrappers = mutableListOf<ChooseRunConfigurationPopup.ItemWrapper<*>>()
         val executor = DefaultDebugExecutor.getDebugExecutorInstance()
-        val allSettings = ChooseRunConfigurationPopup.createSettingsList(project, { executor }, false)
+        val allSettings = ChooseRunConfigurationPopup.createSettingsList(
+            project,
+            { executor },
+            DataManager.getInstance().getDataContext(component),
+            false
+        )
         val existing = HashSet<RunnerAndConfigurationSettings>(model.items)
         for (setting in allSettings) {
             val settingValue = setting.value

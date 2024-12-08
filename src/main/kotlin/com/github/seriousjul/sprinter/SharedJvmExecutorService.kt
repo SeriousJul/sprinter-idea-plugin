@@ -197,6 +197,7 @@ class SharedJvmExecutorServiceImpl(
                     override fun onSuccess(sessions: MutableList<DebuggerSession>?) {
                         executeConfiguration(configuration, contentManager)
                     }
+
                     override fun onNothingToReload(sessions: MutableList<DebuggerSession>?) {
                         executeConfiguration(configuration, contentManager)
                     }
