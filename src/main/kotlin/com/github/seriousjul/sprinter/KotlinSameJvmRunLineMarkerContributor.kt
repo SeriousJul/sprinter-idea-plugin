@@ -37,7 +37,7 @@ class KotlinSameJvmRunLineMarkerContributor: RunLineMarkerContributor() {
             }
         }
         return if (canRunTestsForElement) {
-            Info(null, null, ActionManager.getInstance().getAction("RunTestsInExistingJvm"))
+            Info(ActionManager.getInstance().getAction("RunTestsInExistingJvm"))
         } else null
     }
 }

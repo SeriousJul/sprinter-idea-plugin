@@ -12,7 +12,7 @@ class SameJvmRunLineMarkerContributor : RunLineMarkerContributor() {
             it.canRunTestsFor(element)
         }
         return if (canRunTestForElement) {
-            Info(null, null, ActionManager.getInstance().getAction("RunTestsInExistingJvm"))
+            Info(ActionManager.getInstance().getAction("RunTestsInExistingJvm"))
         } else null
     }
 }
