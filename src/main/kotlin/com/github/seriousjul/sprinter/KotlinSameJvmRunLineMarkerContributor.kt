@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.idea.highlighter.KotlinTestRunLineMarkerContributor
 import org.jetbrains.kotlin.idea.junit.JunitKotlinTestFrameworkProvider
 import org.jetbrains.kotlin.psi.KtFile
 
-class KotlinSameJvmRunLineMarkerContributor: RunLineMarkerContributor() {
+class KotlinSameJvmRunLineMarkerContributor : RunLineMarkerContributor() {
     private val contributorDelegate = KotlinTestRunLineMarkerContributor()
 
     override fun getInfo(element: PsiElement): Info? {
@@ -27,7 +27,8 @@ class KotlinSameJvmRunLineMarkerContributor: RunLineMarkerContributor() {
         if (!RootKindFilter.projectAndLibrarySources.matches(element) || element.containingFile !is KtFile) {
             return null
         }
-        val testEntity = JunitKotlinTestFrameworkProvider.getInstance().getJavaTestEntity(element, checkMethod = true) ?: return null
+        val testEntity =
+            JunitKotlinTestFrameworkProvider.getInstance().getJavaTestEntity(element, checkMethod = true) ?: return null
         val testMethod = testEntity.testMethod
         val canRunTestsForElement = testFrameworkForRunningInSharedJVMExtensionPoint.extensionList.any {
             if (testMethod != null) {
@@ -37,7 +38,7 @@ class KotlinSameJvmRunLineMarkerContributor: RunLineMarkerContributor() {
             }
         }
         return if (canRunTestsForElement) {
-            Info(ActionManager.getInstance().getAction("RunTestsInExistingJvm"))
+            Info(ActionManager.getInstance().getAction(RunTestsInExistingJvmAction.ACTION_NAME))
         } else null
     }
 }

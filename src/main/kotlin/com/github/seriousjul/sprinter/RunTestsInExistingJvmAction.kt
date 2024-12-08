@@ -3,13 +3,18 @@ package com.github.seriousjul.sprinter
 import com.intellij.execution.JavaTestConfigurationBase
 import com.intellij.execution.actions.ConfigurationContext
 import com.intellij.execution.configurations.RunConfiguration
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import org.jetbrains.annotations.NonNls
 
 open class RunTestsInExistingJvmAction : AnAction() {
+    companion object {
+        @NonNls
+        const val ACTION_NAME: String = "RunTestsInExistingJvm"
+    }
+
     override fun getActionUpdateThread(): ActionUpdateThread {
         return ActionUpdateThread.BGT
     }
@@ -36,6 +41,7 @@ open class RunTestsInExistingJvmAction : AnAction() {
             ActionPlaces.EDITOR_POPUP,
             ActionPlaces.KEYBOARD_SHORTCUT,
             ActionPlaces.MOUSE_SHORTCUT -> context.configuration?.configuration
+
             else -> null
         }
     }
