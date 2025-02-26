@@ -4,6 +4,19 @@
 
 ## [Unreleased]
 
+## [0.0.4] - 2025-02-26
+
+- Changelog update - `v0.0.3` by @github-actions in https://github.com/SeriousJul/sprinter-idea-plugin/pull/8
+- Bump JetBrains/qodana-action from 2024.2 to 2024.3 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/9
+- Bump org.jetbrains.qodana from 2024.2.6 to 2024.3.2 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/10
+- Bump org.jetbrains.kotlinx.kover from 0.8.3 to 0.9.0 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/11
+- Bump org.jetbrains.intellij.platform from 2.2.0 to 2.2.1 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/12
+- Bump org.jetbrains.qodana from 2024.3.2 to 2024.3.3 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/13
+- Bump org.jetbrains.qodana from 2024.3.3 to 2024.3.4 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/14
+- Bump org.jetbrains.kotlinx.kover from 0.9.0 to 0.9.1 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/15
+- Bump org.jetbrains.kotlin.jvm from 2.1.0 to 2.1.10 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/16
+- Bump org.jetbrains.intellij.platform from 2.2.1 to 2.3.0 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/17
+
 ## [0.0.3] - 2024-12-11
 
 - Changelog update - `v0.0.2` by @github-actions in https://github.com/SeriousJul/sprinter-idea-plugin/pull/7
@@ -19,7 +32,8 @@
 
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
 
-[Unreleased]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/SeriousJul/sprinter-idea-plugin/commits/v0.0.1
