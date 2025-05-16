@@ -185,10 +185,6 @@ private class ConfigurationsWithHotswapAgentPluginsPicker(private val project: P
         }
         val popup = JBPopupFactory.getInstance()
             .createPopupChooserBuilder(wrappers)
-            .setRenderer(SimpleListCellRenderer.create { label, value, _ ->
-                label.icon = value.icon
-                label.text = value.text
-            })
             .setItemChosenCallback { at ->
                 val settings = at.value
                 if (settings is RunnerAndConfigurationSettings) {
