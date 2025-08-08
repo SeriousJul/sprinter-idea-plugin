@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.0.7] - 2025-08-08
+
+**Full Changelog**: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.6...v0.0.7
+
 ## [0.0.5] - 2025-04-18
 
 - Bump org.jetbrains.intellij.platform from 2.3.0 to 2.5.0 by @dependabot in https://github.com/SeriousJul/sprinter-idea-plugin/pull/21
@@ -39,7 +43,8 @@
 
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
 
-[Unreleased]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.5...v0.0.7
 [0.0.5]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.2...v0.0.3
