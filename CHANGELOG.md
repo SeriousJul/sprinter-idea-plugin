@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+
+## [0.0.7] - 2025-08-08
+
+**Full Changelog**: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.6...v0.0.7
+
 ## [0.0.6] - 2025-08-08
 
 - Bump org.jetbrains.qodana from 2024.3.4 to 2025.1.0 by @dependabot[bot] in https://github.com/SeriousJul/sprinter-idea-plugin/pull/24
@@ -16,6 +21,7 @@
 - Bump org.jetbrains.changelog from 2.2.1 to 2.4.0 by @dependabot[bot] in https://github.com/SeriousJul/sprinter-idea-plugin/pull/33
 - Bump org.jetbrains.kotlin.jvm from 2.1.21 to 2.2.0 by @dependabot[bot] in https://github.com/SeriousJul/sprinter-idea-plugin/pull/30
 - Bump org.jetbrains.intellij.platform from 2.6.0 to 2.7.0 by @dependabot[bot] in https://github.com/SeriousJul/sprinter-idea-plugin/pull/32
+
 
 ## [0.0.5] - 2025-04-18
 
@@ -52,7 +58,8 @@
 
 - Initial scaffold created from [IntelliJ Platform Plugin Template](https://github.com/JetBrains/intellij-platform-plugin-template)
 
-[Unreleased]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.6...HEAD
+[Unreleased]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/SeriousJul/sprinter-idea-plugin/compare/v0.0.3...v0.0.4
