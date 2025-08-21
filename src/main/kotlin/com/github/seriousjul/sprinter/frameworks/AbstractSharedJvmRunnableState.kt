@@ -83,7 +83,7 @@ abstract class AbstractSharedJvmRunnableState<C: JavaTestConfigurationBase, F: T
     }
 
     override fun isReadActionRequired(): Boolean {
-        return true
+        return false
     }
 
     protected abstract val mainClassName: String
