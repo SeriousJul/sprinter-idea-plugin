@@ -1,5 +1,10 @@
 package com.github.seriousjul.sprinter.frameworks
 
+import com.github.seriousjul.sprinter.SharedJvmConfiguration
+import com.github.seriousjul.sprinter.SharedJvmExecutorService
+import com.github.seriousjul.sprinter.getHotswapAgentJavaArgumentsProvider
+import com.github.seriousjul.sprinter.settings.SharedSprinterSettingsState
+import com.github.seriousjul.sprinter.settings.getSharedSprinterSettings
 import com.intellij.execution.*
 import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.configurations.ParametersList
@@ -11,17 +16,13 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.target.TargetProgressIndicator
 import com.intellij.execution.testframework.TestSearchScope
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.projectRoots.JdkUtil
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.util.PathUtil
-import com.github.seriousjul.sprinter.SharedJvmConfiguration
-import com.github.seriousjul.sprinter.SharedJvmExecutorService
-import com.github.seriousjul.sprinter.getHotswapAgentJavaArgumentsProvider
-import com.github.seriousjul.sprinter.settings.SharedSprinterSettingsState
-import com.github.seriousjul.sprinter.settings.getSharedSprinterSettings
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -77,13 +78,15 @@ abstract class AbstractSharedJvmRunnableState<C: JavaTestConfigurationBase, F: T
 
         createTemporaryFolderWithHotswapAgentProperties()?.let(parameters.classPath::addFirst)
         getHotswapAgentJavaArgumentsProvider(environment.project).addArguments(parameters)
-        JavaRunConfigurationExtensionManager.instance.updateJavaParameters(configuration, parameters, runnerSettings, environment.executor)
+        ReadAction.run<ExecutionException> {
+            JavaRunConfigurationExtensionManager.instance.updateJavaParameters(configuration, parameters, runnerSettings, environment.executor)
+        }
 
         return parameters
     }
 
     override fun isReadActionRequired(): Boolean {
-        return true
+        return false
     }
 
     protected abstract val mainClassName: String
