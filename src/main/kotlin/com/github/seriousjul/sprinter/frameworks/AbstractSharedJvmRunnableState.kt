@@ -11,7 +11,6 @@ import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.execution.target.TargetProgressIndicator
 import com.intellij.execution.testframework.TestSearchScope
-import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.projectRoots.JdkUtil
@@ -78,13 +77,13 @@ abstract class AbstractSharedJvmRunnableState<C: JavaTestConfigurationBase, F: T
 
         createTemporaryFolderWithHotswapAgentProperties()?.let(parameters.classPath::addFirst)
         getHotswapAgentJavaArgumentsProvider(environment.project).addArguments(parameters)
-        WriteAction.compute<Unit, ExecutionException> { JavaRunConfigurationExtensionManager.instance.updateJavaParameters(configuration, parameters, runnerSettings, environment.executor) }
+        JavaRunConfigurationExtensionManager.instance.updateJavaParameters(configuration, parameters, runnerSettings, environment.executor)
 
         return parameters
     }
 
     override fun isReadActionRequired(): Boolean {
-        return false
+        return true
     }
 
     protected abstract val mainClassName: String
