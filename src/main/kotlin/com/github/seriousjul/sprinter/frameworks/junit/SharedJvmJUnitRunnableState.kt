@@ -31,7 +31,7 @@ class SharedJvmJUnitRunnableState(
         testObject.downloadAdditionalDependencies(parametersForTestObject)
 
         parameters.classPath.addAll(parametersForTestObject.classPath.pathList)
-        parameters.programParametersList.addAll(parametersForTestObject.programParametersList.parameters)
+        //parameters.programParametersList.addAll(parametersForTestObject.programParametersList.parameters)
         return parameters
     }
 
