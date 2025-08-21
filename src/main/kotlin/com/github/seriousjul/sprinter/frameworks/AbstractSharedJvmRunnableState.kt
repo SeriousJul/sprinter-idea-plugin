@@ -68,17 +68,18 @@ abstract class AbstractSharedJvmRunnableState<C: JavaTestConfigurationBase, F: T
 
     override fun createJavaParameters(): JavaParameters {
         val parameters = super.createJavaParameters()
-        val settings = getSharedSprinterSettings(environment.project)
-        addVmParametersFromInitialConfigIfNeeded(parameters, settings)
-        addEnvsFromInitialConfigIfNeeded(parameters, settings)
-
-        parameters.mainClass = mainClassName
-
-        createServerSocket(parameters)
-
-        createTemporaryFolderWithHotswapAgentProperties()?.let(parameters.classPath::addFirst)
-        getHotswapAgentJavaArgumentsProvider(environment.project).addArguments(parameters)
+        
         ReadAction.run<ExecutionException> {
+            val settings = getSharedSprinterSettings(environment.project)
+            addVmParametersFromInitialConfigIfNeeded(parameters, settings)
+            addEnvsFromInitialConfigIfNeeded(parameters, settings)
+    
+            parameters.mainClass = mainClassName
+    
+            createServerSocket(parameters)
+    
+            createTemporaryFolderWithHotswapAgentProperties()?.let(parameters.classPath::addFirst)
+            getHotswapAgentJavaArgumentsProvider(environment.project).addArguments(parameters)
             JavaRunConfigurationExtensionManager.instance.updateJavaParameters(configuration, parameters, runnerSettings, environment.executor)
         }
 
