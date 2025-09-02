@@ -88,7 +88,7 @@ class FakelyClosedOutputStream(
 
 class OnlyOnTextAvailableListener(
     val delegateListener: ProcessListener
-): ProcessAdapter() {
+): ProcessListener {
     override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
         delegateListener.onTextAvailable(event, outputType)
     }
