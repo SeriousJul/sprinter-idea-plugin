@@ -13,7 +13,7 @@ import com.intellij.execution.actions.RunConfigurationProducer
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.impl.ExecutionManagerImpl
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.runners.ExecutionUtil
 import com.intellij.execution.ui.RunContentDescriptor
@@ -70,7 +70,7 @@ class SharedJvmExecutorServiceImpl(
     ) {
         check(sharedJvmProcess == null)
         sharedJvmProcess = testFramework.wrapSharedJvmProcess(process, serverSocket, executor).also {
-            process.addProcessListener(object : ProcessAdapter() {
+            process.addProcessListener(object : ProcessListener {
                 override fun processTerminated(event: ProcessEvent) {
                     sharedJvmProcess = null
                 }
@@ -131,7 +131,7 @@ class SharedJvmExecutorServiceImpl(
     ) {
         val terminatedCounter = AtomicInteger(0)
         descriptors.forEach {
-            it.processHandler!!.addProcessListener(object : ProcessAdapter() {
+            it.processHandler!!.addProcessListener(object : ProcessListener {
                 override fun processTerminated(event: ProcessEvent) {
                     if (terminatedCounter.incrementAndGet() == descriptors.size) {
                         action()
