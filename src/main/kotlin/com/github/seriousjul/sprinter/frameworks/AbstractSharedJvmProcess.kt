@@ -4,7 +4,7 @@ import com.intellij.execution.Executor
 import com.intellij.execution.JavaRunConfigurationExtensionManager
 import com.intellij.execution.JavaTestConfigurationBase
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.testframework.JavaAwareTestConsoleProperties
@@ -34,7 +34,7 @@ abstract class AbstractSharedJvmProcess(
     private var previousConsoleView: Content? = null
 
     init {
-        process.addProcessListener(object : ProcessAdapter() {
+        process.addProcessListener(object : ProcessListener {
             override fun processTerminated(event: ProcessEvent) {
                 serverSocket.close()
             }
