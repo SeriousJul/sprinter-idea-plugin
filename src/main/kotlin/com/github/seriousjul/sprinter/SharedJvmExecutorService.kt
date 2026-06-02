@@ -25,7 +25,6 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindowId
 import com.intellij.openapi.wm.ToolWindowManager
-import com.intellij.task.ProjectTaskContext
 import com.intellij.task.ProjectTaskManager
 import com.intellij.ui.content.ContentManager
 import com.intellij.util.concurrency.AppExecutorUtil
@@ -191,18 +190,31 @@ class SharedJvmExecutorServiceImpl(
             val contentManager = debugSession.xDebugSession?.ui?.contentManager ?: return
             val projectTaskManager = ProjectTaskManager.getInstance(project)
             val buildTask = projectTaskManager.createModulesBuildTask(configuration.modules, true, true, false)
-            val buildContext = ProjectTaskContext(buildTask)
-                .withUserData(HotSwapUIImpl.SKIP_HOT_SWAP_KEY, false)
-                .withUserData(hotswapStatusListenerKey, object : HotSwapStatusListener {
-                    override fun onSuccess(sessions: MutableList<DebuggerSession>?) {
-                        executeConfiguration(configuration, contentManager)
-                    }
-
-                    override fun onNothingToReload(sessions: MutableList<DebuggerSession>?) {
-                        executeConfiguration(configuration, contentManager)
-                    }
-                })
-            projectTaskManager.run(buildContext, buildTask)
+            val buildContext = try {
+                val taskContextClass = Class.forName("com.intellij.task.ProjectTaskContext")
+                val constructor = taskContextClass.getDeclaredConstructor(
+                    Any::class.java,
+                    com.intellij.execution.configurations.RunConfiguration::class.java,
+                    Boolean::class.javaPrimitiveType,
+                    com.intellij.openapi.actionSystem.DataContext::class.java,
+                    Int::class.javaPrimitiveType,
+                    kotlin.jvm.internal.DefaultConstructorMarker::class.java
+                )
+                constructor.isAccessible = true
+                constructor.newInstance(buildTask, null, false, null, 0, null)
+            } catch (ignored: Throwable) {
+                null
+            }
+            if (buildContext != null) {
+                try {
+                    val runMethod = projectTaskManager.javaClass.getMethod("run", buildContext.javaClass, buildTask.javaClass)
+                    runMethod.invoke(projectTaskManager, buildContext, buildTask)
+                } catch (_: Throwable) {
+                    projectTaskManager.run(buildTask)
+                }
+            } else {
+                projectTaskManager.run(buildTask)
+            }
         } else {
             val contentManager = ToolWindowManager.getInstance(project)
                 .getToolWindow(ToolWindowId.RUN)?.contentManager ?: return
