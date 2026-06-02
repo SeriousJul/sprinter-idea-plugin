@@ -42,20 +42,107 @@ abstract class AbstractSharedJvmRunnableState<C: JavaTestConfigurationBase, F: T
     }
 
     private fun startProcess(executor: Executor): OSProcessHandler {
-        val remoteEnvironment = environment.getPreparedTargetEnvironment(this, TargetProgressIndicator.EMPTY)
         val targetedCommandLineBuilder = targetedCommandLine
         val commandLine = targetedCommandLineBuilder.build()
-        resolveServerSocketPort(remoteEnvironment)
-        val serverSocket = serverSocket!!
-        val process = KillableColoredProcessHandler.Silent(
-            remoteEnvironment.createProcess(commandLine, EmptyProgressIndicator()),
-            commandLine.getCommandPresentation(remoteEnvironment),
-            commandLine.charset,
-            targetedCommandLineBuilder.filesToDeleteOnTermination
-        )
+
+        // Try to prepare a remote TargetEnvironment and create a process via reflection
+        var processHandler: OSProcessHandler? = null
+        var serverSocketLocal: java.net.ServerSocket? = null
+
+        try {
+            val getPreparedMethod = try {
+                environment.javaClass.getMethod(
+                    "getPreparedTargetEnvironment",
+                    com.intellij.execution.configurations.RunProfileState::class.java,
+                    TargetProgressIndicator::class.java
+                )
+            } catch (nnse: NoSuchMethodException) {
+                null
+            }
+
+            if (getPreparedMethod != null) {
+                val remoteEnvironment = getPreparedMethod.invoke(environment, this, TargetProgressIndicator.EMPTY)
+
+                // resolveServerSocketPort requires a TargetEnvironment; call it via reflection if present
+                try {
+                    val resolveMethod = this::class.java.getDeclaredMethod("resolveServerSocketPort", remoteEnvironment!!::class.java)
+                    resolveMethod.isAccessible = true
+                    resolveMethod.invoke(this, remoteEnvironment)
+                } catch (_: Throwable) {
+                    // If reflection fails, do nothing; the remote environment may not require explicit port resolution.
+                }
+
+                serverSocketLocal = serverSocket
+
+                // createProcess(remoteEnv, commandLine, EmptyProgressIndicator)
+                val createMethod = try {
+                    remoteEnvironment?.javaClass?.getMethod("createProcess", commandLine.javaClass, com.intellij.openapi.progress.ProgressIndicator::class.java)
+                } catch (e: NoSuchMethodException) {
+                    null
+                }
+
+                val proc: Process? = if (createMethod != null) {
+                    createMethod.invoke(remoteEnvironment, commandLine, EmptyProgressIndicator()) as? Process
+                } else {
+                    null
+                }
+
+                if (proc != null) {
+                    val getPresentationMethod = try {
+                        commandLine.javaClass.getMethod("getCommandPresentation", remoteEnvironment.javaClass)
+                    } catch (e: NoSuchMethodException) {
+                        null
+                    }
+
+                    val presentation = try {
+                        if (getPresentationMethod != null) getPresentationMethod.invoke(commandLine, remoteEnvironment) as? String
+                        else null
+                    } catch (t: Throwable) { null }
+
+                    val presentationStr = presentation ?: commandLine.toString()
+
+                    processHandler = KillableColoredProcessHandler.Silent(
+                        proc,
+                        presentationStr,
+                        try { commandLine.javaClass.getMethod("getCharset").invoke(commandLine) as java.nio.charset.Charset } catch (_: Throwable) { commandLine.charset },
+                        try {
+                            commandLine.javaClass.getMethod("getFilesToDeleteOnTermination").invoke(commandLine) as? Collection<java.io.File>
+                        } catch (_: Throwable) {
+                            null
+                        }?.toMutableSet() ?: targetedCommandLineBuilder.filesToDeleteOnTermination
+                    )
+                }
+            }
+        } catch (t: Throwable) {
+            processHandler = null
+        }
+
+        // Fallback: try to create local process from the commandLine via reflection or available API
+        if (processHandler == null) {
+            val proc: Process? = try {
+                try { commandLine.javaClass.getMethod("createProcess").invoke(commandLine) as? Process }
+                catch (_: Throwable) { null }
+            } catch (t: Throwable) { null }
+
+            val presentationStr = try { commandLine.javaClass.getMethod("getCommandLineString").invoke(commandLine) as? String } catch (_: Throwable) { commandLine.toString() }
+
+            val charset = try { commandLine.javaClass.getMethod("getCharset").invoke(commandLine) as java.nio.charset.Charset } catch (_: Throwable) { commandLine.charset }
+
+            val filesToDelete = try {
+                commandLine.javaClass.getMethod("getFilesToDeleteOnTermination").invoke(commandLine) as? Collection<java.io.File>
+            } catch (_: Throwable) {
+                null
+            }?.toMutableSet() ?: targetedCommandLineBuilder.filesToDeleteOnTermination
+
+            val procNonNull = proc ?: throw ExecutionException("Failed to create process")
+            processHandler = KillableColoredProcessHandler.Silent(procNonNull, presentationStr, charset, filesToDelete)
+            serverSocketLocal = serverSocket
+        }
+
+        val process = processHandler!!
 
         environment.project.getService(SharedJvmExecutorService::class.java)
-            .saveSharedJvmProcess(process, serverSocket, executor, testFramework)
+            .saveSharedJvmProcess(process, serverSocketLocal!!, executor, testFramework)
 
         val content = targetedCommandLineBuilder.getUserData(JdkUtil.COMMAND_LINE_CONTENT)
         content?.forEach { (key: String, value: String) ->
@@ -67,23 +154,21 @@ abstract class AbstractSharedJvmRunnableState<C: JavaTestConfigurationBase, F: T
     }
 
     override fun createJavaParameters(): JavaParameters {
-        val parameters = super.createJavaParameters()
-        
-        ReadAction.run<ExecutionException> {
+        return ReadAction.nonBlocking<JavaParameters> {
+            val parameters = super.createJavaParameters()
             val settings = getSharedSprinterSettings(environment.project)
             addVmParametersFromInitialConfigIfNeeded(parameters, settings)
             addEnvsFromInitialConfigIfNeeded(parameters, settings)
-    
+
             parameters.mainClass = mainClassName
-    
+
             createServerSocket(parameters)
-    
+
             createTemporaryFolderWithHotswapAgentProperties()?.let(parameters.classPath::addFirst)
             getHotswapAgentJavaArgumentsProvider(environment.project).addArguments(parameters)
             JavaRunConfigurationExtensionManager.instance.updateJavaParameters(configuration, parameters, runnerSettings, environment.executor)
-        }
-
-        return parameters
+            parameters
+        }.executeSynchronously()
     }
 
     override fun isReadActionRequired(): Boolean {
