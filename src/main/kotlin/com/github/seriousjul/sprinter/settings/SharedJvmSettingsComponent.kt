@@ -1,7 +1,7 @@
 package com.github.seriousjul.sprinter.settings
 
 import com.intellij.execution.RunnerAndConfigurationSettings
-import com.intellij.execution.actions.ChooseRunConfigurationPopup
+import com.intellij.execution.RunManager
 import com.intellij.execution.executors.DefaultDebugExecutor
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.ide.DataManager
@@ -164,32 +164,24 @@ private class ConfigurationsWithHotswapAgentPluginsPicker(private val project: P
     }
 
     private fun addConfiguration(it: AnActionButton) {
-        val wrappers = mutableListOf<ChooseRunConfigurationPopup.ItemWrapper<*>>()
         val executor = DefaultDebugExecutor.getDebugExecutorInstance()
-        val allSettings = ChooseRunConfigurationPopup.createSettingsList(
-            project,
-            { executor },
-            DataManager.getInstance().getDataContext(component),
-            false
-        )
+        val allSettings = RunManager.getInstance(project).allSettings
         val existing = HashSet<RunnerAndConfigurationSettings>(model.items)
-        for (setting in allSettings) {
-            val settingValue = setting.value
-            if (settingValue is RunnerAndConfigurationSettings
+        val candidates = allSettings.filter { setting ->
+            val settingValue = setting
+            settingValue is RunnerAndConfigurationSettings
                 && !settingValue.isTemporary
                 && ProgramRunner.getRunner(executor.id, settingValue.configuration) != null
                 && !existing.contains(settingValue)
-            ) {
-                wrappers.add(setting)
-            }
-        }
+        }.map { it as RunnerAndConfigurationSettings }
+
         val popup = JBPopupFactory.getInstance()
-            .createPopupChooserBuilder(wrappers)
-            .setItemChosenCallback { at ->
-                val settings = at.value
-                if (settings is RunnerAndConfigurationSettings) {
-                    model.add(settings)
-                }
+            .createPopupChooserBuilder(candidates)
+            .setRenderer(SimpleListCellRenderer.create<RunnerAndConfigurationSettings> { label, value, _ ->
+                label.text = value.name
+            })
+            .setItemChosenCallback { settings ->
+                model.add(settings)
             }
             .createPopup()
         popup.show(it.preferredPopupPoint)
